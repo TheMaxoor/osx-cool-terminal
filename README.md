@@ -1,4 +1,15 @@
 # OSX Cool Terminal
+## WHAT IS THIS OMG !?
+OSX Cool Terminal is basically a bash profile I wish I could find in the Interwebs, it's a template to have a nice CLI.
+
+Here are the AWESOME features :
+* AWESOME Colors
+* AWESOME Random Emojis Each Line
+* AWESOME Git completion (Thanks to official git files)
+* AWESOME Git infos in prompt (Thanks to official git files)
+
+Here is a screenshoterino :
+![Badass Look](https://raw.github.com/TheMaxoor/readme-ressources/master/osx-cool-terminal/awesome-screenshot.jpg)
 
 ## How to install
 It's easy my friend.
@@ -27,3 +38,5 @@ The git files are required to handle git branch infos in the prompt
 
 ### Step 2 : CUSTOMIZE
 You can directly go to the .customization file and edit it to match your preferences, you can easily change colors, emojis thanks to a lot of comments.
+
+Have fun ! 😀
