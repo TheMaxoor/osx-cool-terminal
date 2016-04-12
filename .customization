@@ -59,4 +59,4 @@ PS1+='$(
   else echo "'${style_branch_clean}'"$(__git_ps1 "(%s)")
     fi)'
 PS1+="\[${RESET}\n\]" # Color reset and new line
-PS1+="\$ ${RESET}" # Last character and reset (finally!)
+PS1+="\[\$${RESET}\] " # Last character and reset (finally!)
