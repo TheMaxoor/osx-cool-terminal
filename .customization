@@ -10,9 +10,7 @@ fi
 
 tput sgr 0 0
 
-# Base styles and color palette
-# Solarized colors
-# https://github.com/altercation/solarized/tree/master/iterm2-colors-solarized
+# Color Palette
 BOLD=$(tput bold)
 RESET=$(tput sgr0)
 SOLAR_YELLOW=$(tput setaf 136)
@@ -35,7 +33,7 @@ style_host="\[${RESET}${SOLAR_GRAY}\]"
 style_path="\[${RESET}${SOLAR_GREEN}\]"
 style_chars="\[${RESET}${SOLAR_WHITE}\]"
 style_smiley="\[${RESET}${SOLAR_WHITE}\]"
-style_branch="${SOLAR_CYAN}"
+style_branch="\[${RESET}${SOLAR_CYAN}\]"
 
 if [[ "$SSH_TTY" ]]; then
     # connected via ssh
