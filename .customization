@@ -1,7 +1,6 @@
 ##########################
 # Terminal Customization #
 ##########################
-
 # Check that terminfo exists before changing TERM var to xterm-256color
 # Prevents prompt flashing in Mac OS X 10.6 Terminal.app
 if [ -e /usr/share/terminfo/x/xterm-256color ]; then
@@ -10,42 +9,42 @@ fi
 
 tput sgr 0 0
 
-# Color Palette
+# Base styles and color palette
+# Solarized colors
+# https://github.com/altercation/solarized/tree/master/iterm2-colors-solarized
 BOLD=$(tput bold)
 RESET=$(tput sgr0)
-SOLAR_YELLOW=$(tput setaf 136)
-SOLAR_ORANGE=$(tput setaf 214)
-SOLAR_RED=$(tput setaf 1)
-SOLAR_MAGENTA=$(tput setaf 125)
-SOLAR_VIOLET=$(tput setaf 63)
-SOLAR_BLUE=$(tput setaf 4)
-SOLAR_CYAN=$(tput setaf 45)
-SOLAR_GREEN=$(tput setaf 2)
-SOLAR_WHITE=$(tput setaf 231)
-SOLAR_GRAY=$(tput setaf 8)
+YELLOW=$(tput setaf 136)
+ORANGE=$(tput setaf 214)
+RED=$(tput setaf 1)
+MAGENTA=$(tput setaf 125)
+VIOLET=$(tput setaf 63)
+BLUE=$(tput setaf 4)
+CYAN=$(tput setaf 45)
+GREEN=$(tput setaf 2)
+WHITE=$(tput setaf 231)
+GRAY=$(tput setaf 8)
 
 RANDOM=$$$(date +%s)
 expressions=("😀" "😐" "😱" "💩" "🍌" "😂" "😇" "🙃")
 selectedexpression=${expressions[$RANDOM % ${#RANDOM[*]}]}
 
-style_user="\[${RESET}${SOLAR_CYAN}\]"
-style_host="\[${RESET}${SOLAR_GRAY}\]"
-style_path="\[${RESET}${SOLAR_GREEN}\]"
-style_chars="\[${RESET}${SOLAR_WHITE}\]"
-style_smiley="\[${RESET}${SOLAR_WHITE}\]"
-style_branch="\[${RESET}${SOLAR_CYAN}\]"
+style_user="\[${RESET}${CYAN}\]"
+style_host="\[${RESET}${GRAY}\]"
+style_path="\[${RESET}${GREEN}\]"
+style_chars="\[${RESET}${WHITE}\]"
+style_smiley="\[${RESET}${WHITE}\]"
+style_branch_modified="\[${RESET}${RED}\]"
+style_branch_added="\[${RESET}${GREEN}\]"
+style_branch_clean="\[${RESET}${CYAN}\]"
 
 if [[ "$SSH_TTY" ]]; then
     # connected via ssh
-    style_host="\[${BOLD}${SOLAR_ORANGE}\]"
+    style_host="\[${BOLD}${ORANGE}\]"
 elif [[ "$USER" == "root" ]]; then
     # logged in as root
-    style_user="\[${BOLD}${SOLAR_RED}\]"
+    style_user="\[${BOLD}${RED}\]"
 fi
-
-is_git_repo() {
-    $(git rev-parse --is-inside-work-tree &> /dev/null)
-}
 
 get_git_branch() {
     local branch_name
@@ -64,26 +63,35 @@ get_git_branch() {
 function prompt_git() {
     local git_info git_state uc us ut st
 
-    if ! is_git_repo; then
-        return 1
-    fi
+    #if ! is_git_repo; then
+    #    return 1
+    #fi
 
-    git_info=$(get_git_branch)
+    #git_info=$(get_git_branch)
+    git_info=$(__git_ps1 "%s")
 
-    printf "${style_branch} (${git_info})"
+    printf "${style_branch} (\${git_info})"
 }
 
 
 # Set the terminal title to the current working directory
 PS1="\[\033]0;\w\007\]"
 # Build the prompt
-PS1+="${style_user}\u" # Username
-PS1+="${style_chars}:" # @
-PS1+="${style_host}\h" # Host
-# PS1+="${style_chars} > " # If you don't want smileys
-PS1+=' ${expressions[$RANDOM % ${#expressions[@]}]}  ' # Random Smiley from the expressions pool
-PS1+="${style_path}\w" # Working directory
-PS1+="\$(prompt_git)" # Git details
-PS1+="\n" # New line
-PS1+="${style_chars}"
-PS1+="$ ${RESET}"
+PS1+="\[${style_user}\u\]" # Username
+PS1+="\[${style_chars}:\]" # :
+PS1+="\[${style_host}\h\]" # Host
+# PS1+="${style_chars} > " # If you want a character instead of random smileys
+PS1+='\[ ${expressions[$RANDOM % ${#expressions[@]}]} \]' # Random Smiley from the expressions pool
+PS1+="${style_path} \w " # Working directory
+PS1+='$(
+    if [[ $(__git_ps1) =~ \*\)$ ]]
+    # a file has been modified but not added
+    then echo "'${style_branch_modified}'"$(__git_ps1 "(%s)")
+    elif [[ $(__git_ps1) =~ \+\)$ ]]
+    # a file has been added, but not commited
+    then echo "'${style_branch_added}'"$(__git_ps1 "(%s)")
+    # the state is clean, changes are commited
+  else echo "'${style_branch_clean}'"$(__git_ps1 "(%s)")
+    fi)'
+PS1+="\[${RESET}\n\]" # Color reset and new line
+PS1+="$ "
