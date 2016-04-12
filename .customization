@@ -9,9 +9,7 @@ fi
 
 tput sgr 0 0
 
-# Base styles and color palette
-# Solarized colors
-# https://github.com/altercation/solarized/tree/master/iterm2-colors-solarized
+# Custom Color Palette
 BOLD=$(tput bold)
 RESET=$(tput sgr0)
 YELLOW=$(tput setaf 136)
@@ -25,10 +23,11 @@ GREEN=$(tput setaf 2)
 WHITE=$(tput setaf 231)
 GRAY=$(tput setaf 8)
 
-RANDOM=$$$(date +%s)
-expressions=("😀" "😐" "😱" "💩" "🍌" "😂" "😇" "🙃")
-selectedexpression=${expressions[$RANDOM % ${#RANDOM[*]}]}
+# Pool handling
+RANDOM=$$$(date +%s) # Random Helper
+expressions=("😀" "😐" "😱" "💩" "🍌" "😂" "😇" "🙃") # Pool of emojis, you can add/remove what you want here.
 
+# STYLES POWAAAAA
 style_user="\[${RESET}${CYAN}\]"
 style_host="\[${RESET}${GRAY}\]"
 style_path="\[${RESET}${GREEN}\]"
@@ -38,51 +37,17 @@ style_branch_modified="\[${RESET}${RED}\]"
 style_branch_added="\[${RESET}${GREEN}\]"
 style_branch_clean="\[${RESET}${CYAN}\]"
 
-if [[ "$SSH_TTY" ]]; then
-    # connected via ssh
-    style_host="\[${BOLD}${ORANGE}\]"
-elif [[ "$USER" == "root" ]]; then
-    # logged in as root
-    style_user="\[${BOLD}${RED}\]"
-fi
-
-get_git_branch() {
-    local branch_name
-
-    # Get the short symbolic ref
-    branch_name=$(git symbolic-ref --quiet --short HEAD 2> /dev/null) ||
-    # If HEAD isn't a symbolic ref, get the short SHA
-    branch_name=$(git rev-parse --short HEAD 2> /dev/null) ||
-    # Otherwise, just give up
-    branch_name="(unknown)"
-
-    printf $branch_name
-}
-
-# Git status information
-function prompt_git() {
-    local git_info git_state uc us ut st
-
-    #if ! is_git_repo; then
-    #    return 1
-    #fi
-
-    #git_info=$(get_git_branch)
-    git_info=$(__git_ps1 "%s")
-
-    printf "${style_branch} (\${git_info})"
-}
-
-
 # Set the terminal title to the current working directory
 PS1="\[\033]0;\w\007\]"
 # Build the prompt
 PS1+="\[${style_user}\u\]" # Username
 PS1+="\[${style_chars}:\]" # :
 PS1+="\[${style_host}\h\]" # Host
-# PS1+="${style_chars} > " # If you want a character instead of random smileys
-PS1+='\[ ${expressions[$RANDOM % ${#expressions[@]}]} \]' # Random Smiley from the expressions pool
+# PS1+="${style_chars} > " # If you want a character instead of random smileys (next line)
+PS1+='\[ ${expressions[$RANDOM % ${#expressions[@]}]} \]' # Random pick from the expressions pool
 PS1+="${style_path} \w " # Working directory
+
+# Git handling (remove if you don't use git, but you should because you're here ;D)
 PS1+='$(
     if [[ $(__git_ps1) =~ \*\)$ ]]
     # a file has been modified but not added
@@ -94,4 +59,4 @@ PS1+='$(
   else echo "'${style_branch_clean}'"$(__git_ps1 "(%s)")
     fi)'
 PS1+="\[${RESET}\n\]" # Color reset and new line
-PS1+="\$ ${RESET}"
+PS1+="\$ ${RESET}" # Last character and reset (finally!)
