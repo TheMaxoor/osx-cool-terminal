@@ -3,10 +3,10 @@
 OSX Cool Terminal is basically a bash profile I wish I could find in the Interwebs, it's a template to have a nice CLI.
 
 Here are the AWESOME features :
-* AWESOME Colors
-* AWESOME Random Emojis Each Line
-* AWESOME Git completion (Thanks to official git files)
-* AWESOME Git infos in prompt (Thanks to official git files)
+* **AWESOME** Colors
+* **AWESOME** Random Emojis Each Line
+* **AWESOME** Git completion (Thanks to official git files)
+* **AWESOME** Git infos in prompt (Thanks to official git files)
 
 Here is a screenshoterino :
 ![Badass Look](https://raw.github.com/TheMaxoor/readme-ressources/master/osx-cool-terminal/awesome-screenshot.jpg)
