@@ -1,0 +1,91 @@
+##########################
+# Terminal Customization #
+##########################
+
+# Check that terminfo exists before changing TERM var to xterm-256color
+# Prevents prompt flashing in Mac OS X 10.6 Terminal.app
+if [ -e /usr/share/terminfo/x/xterm-256color ]; then
+    export TERM='xterm-256color'
+fi
+
+tput sgr 0 0
+
+# Base styles and color palette
+# Solarized colors
+# https://github.com/altercation/solarized/tree/master/iterm2-colors-solarized
+BOLD=$(tput bold)
+RESET=$(tput sgr0)
+SOLAR_YELLOW=$(tput setaf 136)
+SOLAR_ORANGE=$(tput setaf 214)
+SOLAR_RED=$(tput setaf 1)
+SOLAR_MAGENTA=$(tput setaf 125)
+SOLAR_VIOLET=$(tput setaf 63)
+SOLAR_BLUE=$(tput setaf 4)
+SOLAR_CYAN=$(tput setaf 45)
+SOLAR_GREEN=$(tput setaf 2)
+SOLAR_WHITE=$(tput setaf 231)
+SOLAR_GRAY=$(tput setaf 8)
+
+RANDOM=$$$(date +%s)
+expressions=("😀" "😐" "😱" "💩" "🍌" "😂" "😇" "🙃")
+selectedexpression=${expressions[$RANDOM % ${#RANDOM[*]}]}
+
+style_user="\[${RESET}${SOLAR_CYAN}\]"
+style_host="\[${RESET}${SOLAR_GRAY}\]"
+style_path="\[${RESET}${SOLAR_GREEN}\]"
+style_chars="\[${RESET}${SOLAR_WHITE}\]"
+style_smiley="\[${RESET}${SOLAR_WHITE}\]"
+style_branch="${SOLAR_CYAN}"
+
+if [[ "$SSH_TTY" ]]; then
+    # connected via ssh
+    style_host="\[${BOLD}${SOLAR_ORANGE}\]"
+elif [[ "$USER" == "root" ]]; then
+    # logged in as root
+    style_user="\[${BOLD}${SOLAR_RED}\]"
+fi
+
+is_git_repo() {
+    $(git rev-parse --is-inside-work-tree &> /dev/null)
+}
+
+get_git_branch() {
+    local branch_name
+
+    # Get the short symbolic ref
+    branch_name=$(git symbolic-ref --quiet --short HEAD 2> /dev/null) ||
+    # If HEAD isn't a symbolic ref, get the short SHA
+    branch_name=$(git rev-parse --short HEAD 2> /dev/null) ||
+    # Otherwise, just give up
+    branch_name="(unknown)"
+
+    printf $branch_name
+}
+
+# Git status information
+function prompt_git() {
+    local git_info git_state uc us ut st
+
+    if ! is_git_repo; then
+        return 1
+    fi
+
+    git_info=$(get_git_branch)
+
+    printf "${style_branch} (${git_info})"
+}
+
+
+# Set the terminal title to the current working directory
+PS1="\[\033]0;\w\007\]"
+# Build the prompt
+PS1+="${style_user}\u" # Username
+PS1+="${style_chars}:" # @
+PS1+="${style_host}\h" # Host
+# PS1+="${style_chars} > " # If you don't want smileys
+PS1+=' ${expressions[$RANDOM % ${#expressions[@]}]}  ' # Random Smiley from the expressions pool
+PS1+="${style_path}\w" # Working directory
+PS1+="\$(prompt_git)" # Git details
+PS1+="\n" # New line
+PS1+="${style_chars}"
+PS1+="$ ${RESET}"
