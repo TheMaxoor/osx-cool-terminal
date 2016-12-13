@@ -9,7 +9,9 @@ fi
 
 tput sgr 0 0
 
-# Custom Color Palette
+# Base styles and color palette
+# Solarized colors
+# https://github.com/altercation/solarized/tree/master/iterm2-colors-solarized
 BOLD=$(tput bold)
 RESET=$(tput sgr0)
 YELLOW=$(tput setaf 136)
@@ -23,11 +25,10 @@ GREEN=$(tput setaf 2)
 WHITE=$(tput setaf 231)
 GRAY=$(tput setaf 8)
 
-# Pool handling
-RANDOM=$$$(date +%s) # Random Helper
-expressions=("😀" "😐" "😱" "💩" "🍌" "😂" "😇" "🙃") # Pool of emojis, you can add/remove what you want here.
+RANDOM=$$$(date +%s) # RANDOM Helper
+expressions=("😀" "😐" "😱" "💩" "🍌" "😂"  "😇" "🙃" "🌮" "🍻" "🔥 🔥 🔥")
+#expressions=("(/ﾟДﾟ)/" "щ(ºДºщ)" "¯\_(ツ)_/¯" "「(°ヘ°)" "(╯°□°）╯︵ ┻━┻" "༼ つ ◕_◕ ༽つ" "(ಠ_ಠ)" "(ﾉﾟ0ﾟ)ﾉ")
 
-# STYLES POWAAAAA
 style_user="\[${RESET}${CYAN}\]"
 style_host="\[${RESET}${GRAY}\]"
 style_path="\[${RESET}${GREEN}\]"
@@ -43,11 +44,10 @@ PS1="\[\033]0;\w\007\]"
 PS1+="\[${style_user}\u\]" # Username
 PS1+="\[${style_chars}:\]" # :
 PS1+="\[${style_host}\h\]" # Host
-# PS1+="${style_chars} > " # If you want a character instead of random smileys (next line)
-PS1+='\[ ${expressions[$RANDOM % ${#expressions[@]}]} \]' # Random pick from the expressions pool
-PS1+="${style_path} \w " # Working directory
-
-# Git handling (remove if you don't use git, but you should because you're here ;D)
+# PS1+="${style_chars} > " # If you want a character instead of random smileys
+PS1+="\[${style_path} \w\]" # Working directory
+PS1+="\[${style_smiley}\] "
+PS1+='\[${expressions[$RANDOM % ${#expressions[@]}]}\]  '
 PS1+='$(
     if [[ $(__git_ps1) =~ \*\)$ ]]
     # a file has been modified but not added
@@ -58,5 +58,6 @@ PS1+='$(
     # the state is clean, changes are commited
   else echo "'${style_branch_clean}'"$(__git_ps1 "(%s)")
     fi)'
-PS1+="\[${RESET}\n\]" # Color reset and new line
-PS1+="\[\$${RESET}\] " # Last character and reset (finally!)
+PS1+="\n" # new line
+#PS1+="> \[${RESET}\]" # System cannot handle emojis
+PS1+="🐘 💨  \[${RESET}\]" # Last character and reset (finally!)
